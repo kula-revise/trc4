@@ -55,7 +55,7 @@
        b = the middle skill (Interpret, Understand). c = unassessed instinct.
        The top skill (Evaluate, Weigh, Apply) sits on a solid accent ground. */
     --chip-a-bg: rgba(var(--a1-rgb),0.16);  --chip-a-fg: var(--a1);
-    --chip-b-bg: rgba(var(--a2-rgb),0.16);  --chip-b-fg: var(--a2);
+    --chip-b-bg: rgba(var(--a2-rgb),0.16);  --chip-b-fg: var(--chip-ink);
     --chip-c-bg: rgba(0,0,0,0.06);
     --scrim:  rgba(27,42,51,0.5);       /* modal backdrop */
     --inset:  rgba(255,255,255,0.4);    /* sort column well */
@@ -195,6 +195,9 @@
   /* bottle green for the structure, copper for anything the learner earned */
   --a1: #1D4D3B;  --a1-rgb: 29,77,59;
   --a2: #9E5320;  --a2-rgb: 158,83,32;
+  /* The interpret and understand chips put --a2 on a tint of itself and measured 4.32.
+     One step darker clears 4.5 and is used for the chip text only. */
+  --chip-ink: #8F4A1C;
   /* The two hover steps are derived, not identity. Left in the engine block
      they kept the engine's bottle green against this skin's copper. */
   --ink-deep: #0F1613;
@@ -806,7 +809,7 @@ const FLOW = [
       "Nobody's, and it still matters that she is not on it"
     ],
     "correct": 3,
-    "explanation": "Nothing is scored here. A list can be wrong without anybody lying, because whoever writes it decides what counts as taking part. In a moment you meet a wall with seventy-five thousand names on it and an argument about who was left off. That argument is not about honesty either."
+    "explanation": "Nothing is scored here. A list can be wrong without anybody lying. Whoever writes it decides what counts as taking part. In a moment you meet a wall with seventy-five thousand names on it, and an argument about who was left off. That argument is not about honesty either."
   },
   {
     "type": "question",
@@ -819,7 +822,7 @@ const FLOW = [
       "Neither, because nobody remembers a school concert anyway"
     ],
     "correct": 0,
-    "explanation": "The written thing outlasts the argument, which is why the argument about the writing is worth having at the time. Option {opt2} is closer to the truth than it looks to you. A record and a memory can sit side by side for years without meeting. This whole lesson is a country deciding what its written version would say."
+    "explanation": "The written thing outlasts the argument. That is why the argument about the writing is worth having at the time. Option {opt2} is closer to the truth than it looks. A record and a memory can sit side by side for years without ever meeting. In this lesson you watch a country decide what its written version would say."
   },
   {
     "type": "content",
@@ -907,7 +910,7 @@ const FLOW = [
       "The commissioners who heard the evidence over the two years"
     ],
     "correct": 0,
-    "explanation": "Two marks, so give both sides and the standard he sets. Perpetrators and victims, fairly and fully, is the claim the whole report rests on, because it commits the commission before anyone reads a finding. Option {opt1} is half of it, and half of it is what the ANC wanted the report to be. That single sentence is why every party found something in it to object to, as you are about to see."
+    "explanation": "Two marks, so give both sides and the standard he sets. Perpetrators and victims, fairly and fully. The whole report rests on that claim, because it commits the commission before anyone reads a single finding. Option {opt1} is half of it, and half of it is what the ANC wanted the report to be. That one sentence is why every party found something to object to."
   },
   {
     "type": "question",
@@ -921,7 +924,7 @@ const FLOW = [
       "He is writing for an audience outside South Africa entirely"
     ],
     "correct": 0,
-    "explanation": "Four marks means two developed points. The first is the vocabulary: a heartfelt plea, magnanimity, saddened. That is a sermon rather than a finding, and it sits inside an official report. The second is who he addresses, because my white fellow South Africans is a phrase only somebody claiming to belong to a community can use. Option {opt2} would make it a legal document, and you can rule that out from the language."
+    "explanation": "Four marks means two developed points. First, the vocabulary. A heartfelt plea. Magnanimity. Saddened. That is a sermon, and it is sitting inside an official report. Second, who he is talking to. My white fellow South Africans is a phrase only somebody claiming to belong to that community can use. Option {opt2} would make it a legal document, and the language rules that out."
   },
   {
     "type": "question",
@@ -935,7 +938,7 @@ const FLOW = [
       "Historians rather than politicians should judge the report"
     ],
     "correct": 0,
-    "explanation": "The commission has done its share, and the sentence hands the rest to the reader, which means you. It is also a quiet admission of a limit, because a body with a closing date cannot deliver something that takes generations. Option {opt2} names something real, since the Amnesty Committee ran on to 2001, and it is not what this line is about."
+    "explanation": "The commission has done its share. The sentence hands the rest to the reader, which means you. It is also a quiet admission of a limit. A body with a closing date cannot deliver something that takes generations. Option {opt2} names something real, because the Amnesty Committee ran on to 2001. It is not what this line is about."
   },
   {
     "type": "question",
@@ -959,7 +962,7 @@ const FLOW = [
       "2": 1,
       "3": 1
     },
-    "explanation": "The first two are the National Party and the last two are the ANC. Sorting them this way shows you something a list of complaints does not, which is that no two parties objected to the same thing. Each attacked the finding that touched itself, and that pattern is the strongest evidence that the report reached in several directions at once."
+    "explanation": "The first two are the National Party and the last two are the ANC. Sorting them this way shows you something a list of complaints does not. No two parties objected to the same thing. Each attacked the finding that touched itself. That pattern is the strongest evidence that the report reached in several directions at once."
   },
   {
     "type": "question",
@@ -973,7 +976,7 @@ const FLOW = [
       "The report was too long for any party to have read properly"
     ],
     "correct": 0,
-    "explanation": "Each party attacked the finding aimed at itself, which is what you would expect if the findings were not written to please anybody. That is evidence rather than proof, because a report can be disliked by everyone and still be wrong. Option {opt2} would need the parties to have coordinated, and their objections contradict each other flatly."
+    "explanation": "Each party attacked the finding aimed at itself. That is what you would expect if the findings were not written to please anybody. Treat it as evidence and not as proof, because a report can be disliked by everyone and still be wrong. Option {opt2} would need the parties to have worked together, and their objections flatly contradict each other."
   },
   {
     "type": "content",
@@ -1003,7 +1006,7 @@ const FLOW = [
       "Not useful, because the chairperson could not be impartial"
     ],
     "correct": 0,
-    "explanation": "Name the job the source can do for you. Its first sentence commits the commission to reflecting perpetrators and victims alike, and that commitment is the reason nobody was spared. Option {opt1} treats the timing as disqualifying, and a statement of method written in advance is exactly what explains the reaction. Option {opt3} confuses having a position with being unable to describe one."
+    "explanation": "Name the job the source can do for you. Its first sentence commits the commission to reflecting perpetrators and victims alike, and that is why nobody was spared. Option {opt1} treats the timing as a problem. A statement of method written in advance is exactly what explains the reaction. Option {opt3} confuses having a position with being unable to describe one."
   },
   {
     "type": "question",
