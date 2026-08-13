@@ -662,7 +662,7 @@ body { padding-bottom: 4.5rem !important; }
     line-height: 1.45; color: var(--muted); padding-bottom: 0.5rem; margin-bottom: 0.6rem;
     border-bottom: 1px solid var(--rule); }
   .peek-slide p { margin: 0.7rem 0 0; }
-  .srcpeek.multi::after { content: "Swipe, or tap a source above."; display: block;
+  .srcpeek.multi::after { content: "Swipe, or choose a source above."; display: block;
     font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--muted);
     padding: 0.55rem 0 0.2rem; }
   .srcpeek.multi:not([open])::after { display: none; }
@@ -720,9 +720,153 @@ body { padding-bottom: 4.5rem !important; }
   .results-actions button { flex: 1; }
   .hidden { display: none !important; }
 
+
+/* ============================================================
+   EARNED STATES READ GREEN
+   Applied to match the other four source strands.
+
+   This strand is the awkward one. Its structural accent --a1 is
+   already a green, so "correct = green" cannot rely on hue
+   alone. Two things separate it. The correct option is the only
+   element in the strand that takes a solid fill of any colour,
+   and it is the only one that carries a tick. The green chosen
+   also sits 26 degrees off the structural one and is markedly
+   more saturated: structure is a desaturated pine at hue 158,
+   the earned state a leaf green at hue 132.
+
+   Two defects in the existing states are fixed at the same time.
+   --ok-bg used --a2, the copper, so a correct answer wore the
+   reward colour as a faint tint. Worse, --no-bg in dark mode
+   resolved to rgba(--a1) which is the strand's green, so a
+   WRONG option was tinted green at night. Both states are now
+   set explicitly and neither depends on those tokens.
+
+   Measured on this skin's own grounds:
+     light  paper text on #2A6335      6.82 : 1
+            the fill against the page  5.88 : 1
+     dark   ink text on #93D98A       10.93 : 1
+   ============================================================ */
+:root { --ok: #2A6335; --ok-rgb: 42,99,53; --on-ok: #F8FAF7; --no-line: #8C4A2F; }
+body.dark { --ok: #93D98A; --ok-rgb: 147,217,138; --on-ok: #101613; --no-line: #E8A263; }
+
+.option.correct, .option-btn.correct,
+body.dark .option.correct, body.dark .option-btn.correct {
+  background: var(--ok) !important;
+  border: 2px solid var(--ok) !important;
+  box-shadow: 5px 5px 0 rgba(var(--ok-rgb),0.30) !important;
+  color: var(--on-ok) !important;
+}
+.option.correct .opt-text, .option-btn.correct .opt-text,
+.option.correct .opt-letter, .option-btn.correct .opt-letter,
+.option.correct .opt-mark, .option-btn.correct .opt-mark,
+body.dark .option.correct .opt-text, body.dark .option-btn.correct .opt-text,
+body.dark .option.correct .opt-letter, body.dark .option-btn.correct .opt-letter,
+body.dark .option.correct .opt-mark, body.dark .option-btn.correct .opt-mark {
+  color: var(--on-ok) !important;
+}
+.option.correct .opt-letter, .option-btn.correct .opt-letter { opacity: 0.85; }
+
+/* The wrong state takes the copper, never the strand's green. */
+.option.wrong, .option-btn.wrong,
+body.dark .option.wrong, body.dark .option-btn.wrong {
+  background: rgba(140,74,47,0.14) !important;
+  border: 2px solid var(--no-line) !important;
+  box-shadow: none !important;
+}
+body.dark .option.wrong, body.dark .option-btn.wrong { background: rgba(232,162,99,0.16) !important; }
+.option.wrong .opt-letter, .option.wrong .opt-mark,
+.option-btn.wrong .opt-letter, .option-btn.wrong .opt-mark { color: var(--no-line) !important; }
+
+.inter-item.ok, body.dark .inter-item.ok {
+  background: var(--ok) !important;
+  border: 2px solid var(--ok) !important;
+  color: var(--on-ok) !important;
+}
+.inter-item.ok span, .inter-item.ok .rank,
+body.dark .inter-item.ok span, body.dark .inter-item.ok .rank { color: var(--on-ok) !important; }
+.inter-item.ok .rank { opacity: 0.85; }
+.bd-fill { background: var(--ok) !important; }
+
+/* ---- Correctness reads on the sort and the order -------------- */
+.inter-item { justify-content: flex-start; }
+.inter-body { flex: 1 1 auto; }
+.inter-mark { font-weight: 700; font-size: 1.1rem; margin-left: 0.6rem; flex: 0 0 auto; }
+.inter-item.ok .inter-mark { color: var(--on-ok) !important; }
+.inter-item.no, body.dark .inter-item.no {
+  background: rgba(140,74,47,0.14) !important;
+  border: 2px solid var(--no-line) !important;
+}
+body.dark .inter-item.no { background: rgba(232,162,99,0.16) !important; }
+.inter-item.no .inter-mark, .inter-item.no .rank { color: var(--no-line) !important; }
+.inter-should {
+  display: block; margin-top: 0.3rem;
+  font-family: var(--sans); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--no-line);
+}
+
+/* A dashed border is the web's convention for a drop target and there
+   is no drag and drop anywhere in the page. */
+.sort-col { border-style: solid !important; }
+
+/* Sort columns stack on a phone: at 390px a two column grid gives each
+   column about 110px, and a ten word claim wraps to one word a line. */
+@media (max-width: 560px) {
+  .sort-cols { grid-template-columns: 1fr; gap: 0.7rem; }
+  .sort-col { min-height: 3rem; }
+}
+
+/* An inline label that does nothing loses the accent. */
+.card p > strong:first-child, .source p > strong:first-child { color: var(--ink) !important; }
+.kt-term > summary {
+  color: var(--a2);
+  text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px;
+}
+
+.marks-gloss {
+  font-family: var(--sans); font-size: 0.74rem; line-height: 1.5;
+  color: var(--fade); margin: -0.3rem 0 0.9rem;
+  border-left: 2px solid var(--hair-strong); padding-left: 0.6rem;
+}
+.score-note {
+  font-family: var(--sans); font-size: 0.8rem; line-height: 1.55;
+  color: var(--fade); text-align: center; margin: -0.4rem 0 1.3rem;
+}
+.peek-who { text-transform: none !important; letter-spacing: 0 !important; }
+
+/* The top bar tag is set to one line with an ellipsis, so a long strand
+   name is cut on a narrow screen. */
+@media (max-width: 430px) {
+  .top-meta { font-size: 0.58rem !important; letter-spacing: 0.06em !important; }
+  .top-meta #lesson-tag { min-width: 0; }
+}
+
+/* ---- THE TIME RAIL -------------------------------------------
+   A hook line may carry a marker. Backwards compatible: a plain
+   string line renders as it always did.
+   ------------------------------------------------------------ */
+.story-line.marked {
+  display: grid; grid-template-columns: 5.2rem 1fr; gap: 0.7rem;
+  align-items: baseline; margin-bottom: 1.15rem;
+}
+.tl-mark {
+  font-family: var(--sans); font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.10em; text-transform: uppercase; color: var(--a2);
+  border-left: 2px solid var(--a2); padding-left: 0.5rem; line-height: 1.5;
+}
+.tl-text { display: block; }
+.story-line.marked + .story-line:not(.marked) { margin-top: 1.8rem; }
+.story-line.marked.last {
+  color: var(--clay) !important; font-weight: 400 !important; font-style: normal !important;
+}
+.story-line.marked.last::before { display: none !important; }
+.story-line.last { font-style: normal !important; }
+@media (max-width: 400px) {
+  .story-line.marked { grid-template-columns: 4.8rem 1fr; gap: 0.6rem; }
+}
+
 </style>
 </head>
-<body>
+<body class="dark">
 <div class="container">
   <div class="top-bar hidden" id="top-bar">
     <div class="top-meta"><span id="lesson-tag">Kula Revise &middot; Grade 12 &middot; The TRC</span><span class="top-count" id="step-count"></span></div>
@@ -788,28 +932,42 @@ const RESULTS = {
 const FLOW = [
   {
     "type": "story",
-    "marker": "A noticeboard",
-    "markerLabel": "Somewhere you know &middot; the week after",
+    "marker": "Two sets of returns",
+    "markerLabel": "The camps &middot; 1901 and 1902",
     "lines": [
-      "The board outside the hall lists everyone who worked on the concert.",
-      "Your friend is on it, and she came to two rehearsals in all.",
-      "The girl who ran the sound desk every single night is not.",
-      "One list. Two stories.",
-      "Nobody decided to leave her off. Somebody simply wrote the list."
+      {
+        "text": "During the South African War the British army moved civilians off the land and into camps."
+      },
+      {
+        "text": "Clerks kept careful returns for the white camps: names, ages and a cause of death for each person."
+      },
+      {
+        "text": "For the black camps alongside them the returns were kept loosely, and for months not at all."
+      },
+      {
+        "text": "For most of the century afterwards, the death toll people quoted came from the first set of books."
+      },
+      {
+        "text": "**Nobody counted the rest.**"
+      },
+      {
+        "text": "What gets written down decides what gets remembered. In this lesson a country sets out to write down everything, and you will read what it still left out."
+      }
     ]
   },
   {
     "type": "question",
     "kind": "instinct",
-    "q": "Whose fault is the missing name?",
+    "q": "Why did the usual death toll leave those camps out?",
     "options": [
-      "The person who wrote the list and did not check it",
-      "Your friend, for accepting a credit she had not earned",
-      "The girl herself, for not making sure she was included",
-      "Nobody's, and it still matters that she is not on it"
+      "Because far fewer people died in them than in the other camps",
+      "Because the people keeping the books were not counting them at all",
+      "Because the records from those camps were all destroyed afterwards",
+      "Because nobody at the time knew that those camps existed at all"
     ],
-    "correct": 3,
-    "explanation": "Nothing is scored here. A list can be wrong without anybody lying. Whoever writes it decides what counts as taking part. In a moment you meet a wall with seventy-five thousand names on it, and an argument about who was left off. That argument is not about honesty either."
+    "correct": 1,
+    "explanation": "There is no score on this one. The camps were known about and people in them were dying. What decided the number everybody later quoted was which books were kept properly. A record shows you what its keeper thought was worth writing down, and that is not the same as what happened. In the exam, an answer that treats an official figure as simply the truth has skipped the question.",
+    "noSource": true
   },
   {
     "type": "question",
@@ -827,7 +985,7 @@ const FLOW = [
   {
     "type": "content",
     "tag": "The turn",
-    "html": "<h2>The word for what you just did</h2><p>You did not ask whether the list was accurate. You asked who wrote it, and what they counted as taking part.</p><p>That is <strong>perspective</strong>: the position a person or body is speaking from, and what that position makes visible or invisible to them. It is not the same as bias, which is a judgement about fairness. Perspective is a fact about where somebody stands.</p><p>Paper 2 uses it constantly. <em>Explain the perspective of the writer. Comment on the usefulness of the source.</em> Both want the same first move, which is to work out who is talking and what they can see from there.</p>",
+    "html": "<h2>The word for what you just did</h2><p>You did not ask whether the returns were accurate. You asked who kept them, and what they counted as worth writing down.</p><p>That is <strong>perspective</strong>: the position a person or body is speaking from, and what that position makes visible or invisible to them. It is not the same as bias, which is a judgement about fairness. Perspective is a fact about where somebody stands.</p><p>Paper 2 uses it constantly. <em>Explain the perspective of the writer. Comment on the usefulness of the source.</em> Both want the same first move, which is to work out who is talking and what they can see from there.</p>",
     "remember": "Perspective is a position, not an accusation. Everyone has one, including the people you agree with.",
     "terms": [
       {
@@ -867,7 +1025,7 @@ const FLOW = [
   {
     "type": "content",
     "tag": "The evidence",
-    "html": "<h2>Three parties, three objections</h2><p>The <strong>National Party</strong> said the commission had gone looking for revenge rather than reconciliation. De Klerk took legal action to keep a paragraph about him out of the published report.</p><p>The <strong>African National Congress</strong> said it was wrong to judge the violence used to fight apartheid by the same standard as the violence used to defend it. Mbeki argued the point, and the ANC went to court to stop publication. It failed, and the report came out.</p><p>The <strong>Inkatha Freedom Party</strong> said the commission had favoured the ANC's version of the 1980s and played down the violence in Natal. Buthelezi was never subpoenaed, which the commission decided in order to avoid restarting the fighting.</p>",
+    "html": "<h2>Three parties, three objections</h2><p>The <strong>National Party</strong> said the commission had gone looking for revenge rather than reconciliation. De Klerk took legal action to keep a paragraph about him out of the published report.</p><p>The <strong>African National Congress</strong> said the two kinds of violence should not be judged by one standard. One was used to fight apartheid and one to defend it. Mbeki argued the point, and the ANC went to court to stop publication. It failed, and the report came out.</p><p>The <strong>Inkatha Freedom Party</strong> said the commission had favoured the ANC's version of the 1980s and played down the violence in Natal. Buthelezi was never subpoenaed, which the commission decided in order to avoid restarting the fighting.</p>",
     "remember": "Everyone objected, and no two objected to the same thing. That is the pattern worth carrying into any question about the responses.",
     "terms": [
       {
@@ -981,7 +1139,7 @@ const FLOW = [
   {
     "type": "content",
     "tag": "The evidence",
-    "html": "<h2>The walls that came afterwards</h2><figure class=\"figure wide\"><svg role=\"img\" aria-label=\"A horizontal bar showing the capacity of the Wall of Names. The full bar stands for 120 000 name spaces. About five eighths of it is filled to show the 75 000 names verified so far, and the rest is left open.\" viewBox=\"0 0 460 210\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"1\" y=\"14\" font-size=\"11.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">The Wall of Names, by capacity</text><text x=\"457\" y=\"14\" font-size=\"11.5\" text-anchor=\"end\" fill=\"var(--clay)\" font-weight=\"400\">697 metres of stone</text><rect x=\"1\" y=\"28\" width=\"286\" height=\"46\" fill=\"var(--a1)\"/><rect x=\"288\" y=\"28\" width=\"170\" height=\"46\" fill=\"none\" stroke=\"var(--clay)\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><text x=\"8\" y=\"57\" font-size=\"12\" text-anchor=\"start\" fill=\"var(--sand)\" font-weight=\"700\">75 000 verified</text><text x=\"450\" y=\"57\" font-size=\"11.5\" text-anchor=\"end\" fill=\"var(--clay)\" font-weight=\"600\">space for 120 000</text><line x1=\"1\" y1=\"96\" x2=\"457\" y2=\"96\" stroke=\"var(--a1)\" stroke-width=\"1\"/><text x=\"1\" y=\"120\" font-size=\"12\" text-anchor=\"start\" fill=\"var(--ink)\" font-weight=\"700\">Eight conflicts are commemorated</text><text x=\"1\" y=\"140\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Pre-colonial wars</text><text x=\"235\" y=\"140\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Slavery</text><text x=\"1\" y=\"156\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Genocide</text><text x=\"235\" y=\"156\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Wars of Resistance</text><text x=\"1\" y=\"172\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The South African War</text><text x=\"235\" y=\"172\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The First World War</text><text x=\"1\" y=\"188\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The Second World War</text><text x=\"235\" y=\"188\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The Struggle for Liberation</text><line x1=\"1\" y1=\"196\" x2=\"457\" y2=\"196\" stroke=\"var(--clay)\" stroke-width=\"0.8\"/><text x=\"1\" y=\"208\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--ink)\" font-weight=\"600\">Members of the South African Defence Force are not included.</text></svg><figcaption>The Wall of Names at Freedom Park, opened from 2005, drawn as a count. It commemorates people who died in eight conflicts, from the pre-colonial wars to the struggle for liberation. The dates matter because the wall was designed to hold far more names than have been verified, so it is a memorial built to keep growing. Original illustration for Kula Revise, from the park's published figures.</figcaption></figure><p>Freedom Park's wall runs 697 metres and can hold 120 000 names. About 75 000 have been verified for inscription.</p><p>Those who fought in the South African Defence Force for the apartheid government were not included, on the grounds that they had not fought for freedom. A memorial built to unite the country still had to decide who counted.</p><p>Thokoza went the other way. More than six hundred people died there in fighting between hostel dwellers and township residents. The community built a roll of honour naming everyone killed, from both sides. Thabo Mbeki and Mangosuthu Buthelezi unveiled it together in 1999, on Khumalo Street, the old boundary between them.</p>",
+    "html": "<h2>The walls that came afterwards</h2><figure class=\"figure wide\"><svg role=\"img\" aria-label=\"A horizontal bar showing the capacity of the Wall of Names. The full bar stands for 120 000 name spaces. About five eighths of it is filled to show the 75 000 names verified so far, and the rest is left open.\" viewBox=\"0 0 460 210\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"1\" y=\"14\" font-size=\"11.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">The Wall of Names, by capacity</text><text x=\"457\" y=\"14\" font-size=\"11.5\" text-anchor=\"end\" fill=\"var(--clay)\" font-weight=\"400\">697 metres of stone</text><rect x=\"1\" y=\"28\" width=\"286\" height=\"46\" fill=\"var(--a1)\"/><rect x=\"288\" y=\"28\" width=\"170\" height=\"46\" fill=\"none\" stroke=\"var(--clay)\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><text x=\"8\" y=\"57\" font-size=\"12\" text-anchor=\"start\" fill=\"var(--sand)\" font-weight=\"700\">75 000 verified</text><text x=\"450\" y=\"57\" font-size=\"11.5\" text-anchor=\"end\" fill=\"var(--clay)\" font-weight=\"600\">space for 120 000</text><line x1=\"1\" y1=\"96\" x2=\"457\" y2=\"96\" stroke=\"var(--a1)\" stroke-width=\"1\"/><text x=\"1\" y=\"120\" font-size=\"12\" text-anchor=\"start\" fill=\"var(--ink)\" font-weight=\"700\">Eight conflicts are commemorated</text><text x=\"1\" y=\"140\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Pre-colonial wars</text><text x=\"235\" y=\"140\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Slavery</text><text x=\"1\" y=\"156\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Genocide</text><text x=\"235\" y=\"156\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• Wars of Resistance</text><text x=\"1\" y=\"172\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The South African War</text><text x=\"235\" y=\"172\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The First World War</text><text x=\"1\" y=\"188\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The Second World War</text><text x=\"235\" y=\"188\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--clay)\" font-weight=\"400\">• The Struggle for Liberation</text><line x1=\"1\" y1=\"196\" x2=\"457\" y2=\"196\" stroke=\"var(--clay)\" stroke-width=\"0.8\"/><text x=\"1\" y=\"208\" font-size=\"10.5\" text-anchor=\"start\" fill=\"var(--ink)\" font-weight=\"600\">Members of the South African Defence Force are not included.</text></svg><figcaption>The Wall of Names at Freedom Park, opened from 2005, drawn as a count. It commemorates people who died in eight conflicts, from the pre-colonial wars to the struggle for liberation. The dates matter because the wall holds far more space than the names verified so far. It was built to keep growing. Original illustration for Kula Revise, from the park's published figures.</figcaption></figure><p>Freedom Park's wall runs 697 metres and can hold 120 000 names. About 75 000 have been verified for inscription.</p><p>Those who fought in the South African Defence Force were not included. The reason given was that they had not fought for freedom. A memorial built to unite the country still had to decide who counted.</p><p>Thokoza went the other way. More than six hundred people died there in fighting between hostel dwellers and township residents. The community built a roll of honour naming everyone killed, from both sides. Thabo Mbeki and Mangosuthu Buthelezi unveiled it together in 1999, on Khumalo Street, the old boundary between them.</p>",
     "remember": "One wall decided who had fought for freedom. The other decided that everyone who died would be named. Both are choices about the past.",
     "terms": [
       {
@@ -1015,7 +1173,7 @@ const FLOW = [
     "q": "What is the main limitation of Source 4A for judging whether the commission succeeded?",
     "options": [
       "It is the commission's own account of its own work",
-      "It was written in 1998 and the last volumes came later",
+      "It was written in 1998, before the last volumes came",
       "It says nothing at all about the amnesty process",
       "It is a foreword rather than a chapter of findings"
     ],
@@ -1167,10 +1325,13 @@ function firstContentIdx(){
 function renderStory(item){
   const lines = item.lines.map((l,i)=>{
     const last = i===item.lines.length-1 ? " last" : "";
-    return `<div class="story-line${last}">${esc(l)}</div>`;
+    const o = (typeof l === "string") ? { text: l } : l;
+    const body = esc(o.text).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    const mk = o.mark ? `<span class="tl-mark">${esc(o.mark)}</span>` : "";
+    return `<div class="story-line${last}${o.mark?" marked":""}">${mk}<span class="tl-text">${body}</span></div>`;
   }).join("");
   stage.innerHTML = `
-    <div class="story">
+    <div class="story${item.side?" story-"+item.side:""}">
       <div class="story-num">${esc(item.marker)}</div>
       <div class="story-unit">${esc(item.markerLabel||"")}</div>
       <div class="story-rule"></div>
@@ -1189,7 +1350,7 @@ function renderStory(item){
 function ktStrip(terms){
   if(!terms || !terms.length) return "";
   const chips = terms.map(t=>`<details class="kt-term"><summary>${esc(t.term)}</summary><div class="kt-def">${esc(t.def)}</div></details>`).join("");
-  return `<div class="kt"><div class="kt-label">Key terms &middot; tap to open</div><div class="kt-row">${chips}</div></div>`;
+  return `<div class="kt"><div class="kt-label">Key terms &middot; open any of these</div><div class="kt-row">${chips}</div></div>`;
 }
 function rememberBox(text){
   if(!text) return "";
@@ -1217,7 +1378,7 @@ function renderCarousel(item){
       ${item.tag?`<div class="stage-tag">${esc(item.tag)}</div>`:""}
       ${item.heading?`<h2>${esc(item.heading)}</h2>`:""}
       <div class="car-wrap">
-        <div class="car-prompt" id="car-prompt">${allRead?`That is all ${cards.length}. Continue is unlocked.`:`Tap the arrows to read all ${cards.length}. Continue unlocks when you have.`}</div>
+        <div class="car-prompt" id="car-prompt">${allRead?`That is all ${cards.length}. Continue is unlocked.`:`Use the arrows to read all ${cards.length}. Continue unlocks when you have.`}</div>
         <div class="car-frame"><div class="car-card">${body}</div></div>
         <div class="car-nav">
           <div class="car-dots">${dots}</div>
@@ -1273,11 +1434,24 @@ function sourcePeek(item){
 function peekShell(list){
   const many = list.length > 1;
   const cue = many
-    ? `Tap to read the ${list.length} sources again`
-    : `Tap to read ${esc(list[0].label)} again`;
+    ? `Open the ${list.length} sources again`
+    : `Open ${esc(/^The /.test(list[0].label) ? list[0].label.charAt(0).toLowerCase()+list[0].label.slice(1) : list[0].label)} again`;
+  // Preview the source, not its bibliography, and never cut a word in half.
+  const peekWords = (html)=>{
+    let s = String(html||"")
+      .replace(/<div class="(src-imprint|cable-head)"[\s\S]*?<\/div>/g," ")
+      .replace(/<[^>]*>/g," ")
+      .replace(/&nbsp;/g," ").replace(/&hellip;/g,"...")
+      .replace(/\s+/g," ").trim();
+    if(s.length<=84) return esc(s);
+    let cut = s.slice(0,84);
+    const sp = cut.lastIndexOf(" ");
+    if(sp>40) cut = cut.slice(0,sp);
+    return esc(cut) + "&hellip;";
+  };
   const who = many
     ? list.map(s=>esc(s.label)).join(" &middot; ")
-    : esc(stripTags(list[0].attr)).slice(0,90);
+    : peekWords(list[0].body);
   const tabs = many
     ? `<div class="peek-tabs" role="tablist">${list.map((s,i)=>
         `<button class="peek-tab${i===list.length-1?" on":""}" data-peek="${i}" role="tab">${esc(s.label)}</button>`).join("")}</div>`
@@ -1339,6 +1513,23 @@ function renderSource(item){
   bindToggles();
 }
 
+
+// A mark allocation is part of the teaching, but the notation is never
+// explained anywhere. Gloss it once, on the first assessed question that
+// carries one, pinned to that question so Back and forward show the same
+// screen twice.
+let _glossAt = null;
+function marksGloss(marks){
+  if(!marks || (_glossAt!==null && _glossAt!==state.idx)) return "";
+  const m = String(marks).match(/\((\d+)\s*x\s*(\d+)\)/);
+  if(!m) return "";
+  _glossAt = state.idx;
+  const pts = parseInt(m[1],10), each = parseInt(m[2],10);
+  const mk = each===1 ? "1 mark" : each+" marks";
+  const p = pts===1 ? `one point, worth ${mk}` : `${pts} separate points, each worth ${mk}`;
+  return `<div class="marks-gloss">That bracket is exam notation. It means the marker wants ${p}.</div>`;
+}
+
 // ============ QUESTION (mcq / order / sort) ============
 function renderQuestion(item){
   if(item.mode==="order") return renderOrder(item);
@@ -1367,7 +1558,7 @@ function renderMCQ(item){
   });
   stage.innerHTML = `
     <div class="card">
-      <div class="q-meta">${chip}${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>
+      <div class="q-meta">${chip}${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>${marksGloss(item.marks)}
       ${sourcePeek(item)}
       <div class="q-text">${item.q}</div>
       <div class="options">${opts}</div>
@@ -1390,18 +1581,31 @@ function renderOrder(item){
   const placed = st.placed;                       // array of content indices in chosen order
   const remaining = item.items.map((_,i)=>i).filter(i=>!placed.includes(i));
   let placedHtml = placed.map((ci,pos)=>{
-    let cls="inter-item inter-placed";
-    if(answered){ cls = "inter-item "+(ci===item.answer[pos]?"ok":"no"); }
-    return `<button class="${cls}" data-placed="${ci}" ${answered?"disabled":""}><span class="rank">${pos+1}</span><span>${esc(item.items[ci])}</span></button>`;
+    let cls="inter-item inter-placed", mark="", should="";
+    if(answered){
+      const right = ci===item.answer[pos];
+      cls = "inter-item "+(right?"ok":"no");
+      mark = `<span class="inter-mark">${right?"&#10003;":"&#10007;"}</span>`;
+      if(!right) should = `<span class="inter-should">belongs at ${item.answer.indexOf(ci)+1}</span>`;
+    }
+    return `<button class="${cls}" data-placed="${ci}" ${answered?"disabled":""}><span class="rank">${pos+1}</span><span class="inter-body">${esc(item.items[ci])}${should}</span>${mark}</button>`;
   }).join("");
-  let poolHtml = remaining.map(ci=>`<button class="inter-item" data-pool="${ci}"><span class="rank">&bull;</span><span>${esc(item.items[ci])}</span></button>`).join("");
+  // The pool is shuffled once and remembered, so an order question can never
+  // present its events already close to sequence.
+  if(!st.pool){
+    const a=item.items.map((_,i)=>i);
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    st.pool=a;
+  }
+  const poolOrder = st.pool.filter(ci=>remaining.includes(ci));
+  let poolHtml = poolOrder.map(ci=>`<button class="inter-item" data-pool="${ci}"><span class="rank">&bull;</span><span>${esc(item.items[ci])}</span></button>`).join("");
   stage.innerHTML = `
     <div class="card">
-      <div class="q-meta"><span class="chip ${item.level?chipCls(item.level):"chip-instinct"}">${item.level||"Instinct"}</span>${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>
+      <div class="q-meta"><span class="chip ${item.level?chipCls(item.level):"chip-instinct"}">${item.level||"Instinct"}</span>${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>${marksGloss(item.marks)}
       ${sourcePeek(item)}
       <div class="q-text">${item.q}</div>
       <div class="inter">
-        <div class="inter-pool" id="placed">${placedHtml||`<div style="color:var(--fade);font-size:0.9rem;padding:0.4rem 0;">Tap an event below to start putting them in order.</div>`}</div>
+        <div class="inter-pool" id="placed">${placedHtml||`<div style="color:var(--fade);font-size:0.9rem;padding:0.4rem 0;">Choose an event below to start putting them in order.</div>`}</div>
         ${remaining.length?`<div style="height:1px;background:rgba(27,42,51,0.14);margin:0.9rem 0;"></div><div class="inter-pool" id="pool">${poolHtml}</div>`:""}
       </div>
       ${answered?`<div class="explanation"><div class="expl-label">Why</div><div class="expl-text">${resolveOpts(item.explanation,null)}</div></div>`:""}
@@ -1425,9 +1629,13 @@ function renderSort(item){
   const unplaced = item.items.map((_,i)=>i).filter(i=>!(i in col));
   const colCards = (which)=>item.items.map((it,ci)=>{
     if(col[ci]!==which) return "";
-    let cls="inter-item inter-placed";
-    if(answered) cls="inter-item "+(item.answer[ci]===which?"ok":"no");
-    return `<button class="${cls}" data-un="${ci}" ${answered?"disabled":""}><span>${esc(it)}</span></button>`;
+    let cls="inter-item inter-placed", mark="";
+    if(answered){
+      const right = item.answer[ci]===which;
+      cls="inter-item "+(right?"ok":"no");
+      mark = `<span class="inter-mark">${right?"&#10003;":"&#10007;"}</span>`;
+    }
+    return `<button class="${cls}" data-un="${ci}" ${answered?"disabled":""}><span class="inter-body">${esc(it)}</span>${mark}</button>`;
   }).join("");
   const pool = unplaced.map(ci=>`
     <div class="inter-item" style="flex-direction:column;align-items:stretch;cursor:default;">
@@ -1439,7 +1647,7 @@ function renderSort(item){
     </div>`).join("");
   stage.innerHTML = `
     <div class="card">
-      <div class="q-meta"><span class="chip ${item.level?chipCls(item.level):"chip-instinct"}">${item.level||"Instinct"}</span>${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>
+      <div class="q-meta"><span class="chip ${item.level?chipCls(item.level):"chip-instinct"}">${item.level||"Instinct"}</span>${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>${marksGloss(item.marks)}
       ${sourcePeek(item)}
       <div class="q-text">${item.q}</div>
       <div class="inter">
@@ -1560,11 +1768,12 @@ function showResults(){
       <h1 class="results-title">${esc(RESULTS.title||"Where you stand")}</h1>
     </div>
     <div class="score-row">
-      <div class="score-block"><div class="score-num">${correct}<span class="score-den">/${total}</span></div><div class="score-label">Correct</div></div>
+      <div class="score-block"><div class="score-num">${correct}<span class="score-den">/${total}</span></div><div class="score-label">Questions right</div></div>
       <div class="score-block"><div class="score-num">${pct}<span class="score-den">%</span></div><div class="score-label">Accuracy</div></div>
       <div class="score-block"><div class="score-word">${band}</div><div class="score-label">Band</div></div>
     </div>
     <div class="grade-desc">${desc}</div>
+    <div class="score-note">This lesson counts questions. The marks printed on each question are what the same question is worth in the exam, which is why the two numbers differ.</div>
     <div class="breakdown"><div class="breakdown-label">By skill</div>${rows}</div>
     <div class="results-actions">
       <button class="btn-secondary" id="restart-btn">Restart lesson</button>
@@ -1577,7 +1786,7 @@ function showResults(){
   });
   /* The button at the end of the lesson is the thing that continues. It does
      not point at a control somewhere else on the page. */
-  document.getElementById("finish-btn").addEventListener("click",()=>{ KulaLMS.advance(); });
+  document.getElementById("finish-btn").onclick = ()=>{ KulaLMS.advance(); };
   KulaLMS.completed();
 }
 
@@ -1602,10 +1811,17 @@ renderCover();
      other way round, so the choice did not survive crossing between a source
      unit and an essay unit. For an essay unit set NATIVE "dark", FLIP "light",
      CLS "bright". Nothing else changes. */
-  var NATIVE = "light";   // the mode this unit is designed in
-  var FLIP   = "dark";    // the mode the toggle offers
+  var NATIVE = "light";   // the mode the stylesheet produces with no class on body
+  var FLIP   = "dark";    // the mode the class produces
   var CLS    = "dark";    // the class that produces FLIP in this unit
-  try{ if(localStorage.getItem("kula-mode")===FLIP){ document.body.classList.add(CLS); } }catch(e){}
+  /* The unit OPENS in dark. body carries the class in the markup rather than
+     having it added here, so there is no flash of the light ground before
+     this script runs at the foot of the document. All this block does is
+     honour a learner who has already chosen otherwise. */
+  var stored = null;
+  try{ stored = localStorage.getItem("kula-mode"); }catch(e){}
+  if(stored === NATIVE) document.body.classList.remove(CLS);
+  else if(stored === FLIP) document.body.classList.add(CLS);
   var SUN='<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>';
   var MOON='<path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/>';
   var b=document.getElementById("kula-mode-toggle");
